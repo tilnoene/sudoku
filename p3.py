@@ -1,8 +1,12 @@
+from distutils.command.build import build
 from random import shuffle, randint
 from timeit import default_timer
 
 class Sudoku:
 	grid = [] # grade 9x9 do sudoku
+	adj = [] # grafo por lista de adjacência
+	index = [] # associa cada posição da matriz à um índice
+	color = {} # cor do nó (cada cor representa o número)
 
   # inicializa a grade do sudoku vazia (preenchida com zeros)
 	def __init__(self, grid=None):
@@ -12,6 +16,14 @@ class Sudoku:
 		else:
 			self.grid = grid
 
+		# inicializa o array de indices
+		for _ in range(9):
+			self.index.append([0] * 9)
+
+		# inicializa lista de adjacência
+		for _ in range(81):
+			self.adj.append([])
+
   # imprime o sudoku no terminal
 	def __str__(self):
 		str_sudoku = ''
@@ -20,6 +32,53 @@ class Sudoku:
 			str_sudoku += ' '.join([str(number) for number in self.grid[row]]).replace('0', '_') + '\n'
 
 		return str_sudoku
+	
+	# gera o grafo por lista de adjacência baseado na grade do sudoku
+	def build_graph(self):
+		# gera os índices na lista de adjacência
+		current_index = 0
+		for i in range(9):
+			for j in range(9):
+				current_index += 1
+				self.index[i][j] = current_index
+				self.color[current_index] = self.grid[i][j]
+
+		# conecta os nós da mesma linha e mesma coluna
+		for row in range(9):
+			for column in range(9):
+				# mesma linha
+				for new_row in range(9):
+					if row != new_row:
+						self.adj[ self.index[row][column] ].append( self.index[new_row][column] )
+				
+				# mesma coluna
+				for new_column in range(9):
+					if column != new_column:
+						self.adj[ self.index[row][column] ].append( self.index[row][new_column] )
+		
+		# conecta os nós do mesmo bloco 3x3
+		for row in range(0, 9, 3):
+			for column in range(0, 9, 3):
+				# bloco que começa na posição [row][column]
+
+				for old_row in range(row, row+3):
+					for old_column in range(column, column+3):
+						for new_row in range(row, row+3):
+							for new_column in range(column, column+3):
+								if not (old_row == new_row and old_column == new_column):
+									# cria uma aresta entre u e v
+									u = self.index[old_row][old_column]
+									v = self.index[new_row][new_column]
+
+									self.adj[u].append(v)
+
+	def debug(self):
+		aceito = [1, 2, 3, 10, 11, 12, 19, 20, 21]
+
+		for i in range(len(self.adj)):
+			for v in self.adj[i]:
+				if i in aceito and v in aceito:
+					print(f'{i} {v}')
 
 # gera um padrão aleatório de números de 1 à 9
 def generate_random_pattern():
@@ -156,12 +215,15 @@ def main():
 		[4, 1, 5, 2, 9, 7, 3, 8, 6],
 	])
 
+	sudoku_example_solution.build_graph()
+	print(sudoku_example_solution.debug())
+
 	# verifica se a solução do sudoku de exemplo é válida
 	# print(check(sudoku_example_solution))
 	
-	sudoku = generate()
-	print(sudoku)
-	print(check(sudoku))
+	# sudoku = generate()
+	# print(sudoku)
+	# print(check(sudoku))
 
 
 # executa a função main por padrão
