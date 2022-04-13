@@ -1,4 +1,5 @@
-from random import shuffle
+from random import shuffle, randint
+from timeit import default_timer
 
 class Sudoku:
 	grid = [] # grade 9x9 do sudoku
@@ -15,7 +16,7 @@ class Sudoku:
 	def __str__(self):
 		str_sudoku = ''
 
-		for row in range(8):
+		for row in range(9):
 			str_sudoku += ' '.join([str(number) for number in self.grid[row]]).replace('0', '_') + '\n'
 
 		return str_sudoku
@@ -81,29 +82,51 @@ def check(sudoku):
 
 	return True
 
+solution_found = False
 def dfs(sudoku, pattern, row, column):
+	global solution_found
+	if sudoku.grid[row][column] != 0:
+		if row == 8 and column == 8: # caso base = célula da direita inferior
+			solution_found = True
+			return
+		elif column == 8:
+			dfs(sudoku, pattern, row+1, 0)
+		else:
+			dfs(sudoku, pattern, row, column+1)
+		
+		return
+
 	for number in pattern:
+		if solution_found:
+			return
+
 		sudoku.grid[row][column] = number
 
 		if check(sudoku):
 			if row == 8 and column == 8: # caso base = célula da direita inferior
-				return True
+				solution_found = True
+				return
 			elif column == 8:
-				if dfs(sudoku, pattern, row+1, 0):
-					return True
+				dfs(sudoku, pattern, row+1, 0)
 			else:
-				if dfs(sudoku, pattern, row, column+1):
-					return True
+				dfs(sudoku, pattern, row, column+1)
 
-	# não achou uma solução, então volta no backtracking para escolher outros números
-	return False
+	if not solution_found:
+		# não achou uma solução, então volta no backtracking para escolher outros números
+		sudoku.grid[row][column] = 0
 
 def generate():
+	global solution_found
 	sudoku = Sudoku()
-	pattern = [x for x in range(1, 10)] # generate_random_pattern()
+	pattern = generate_random_pattern()
+	
+	start = default_timer()
 
-	has_answer = dfs(sudoku, pattern, 0, 0)
-	print(has_answer)
+	solution_found = False
+	dfs(sudoku, pattern, 0, 0)
+
+	stop = default_timer()
+	print('Time: ', stop - start) 
 
 	return sudoku
 
@@ -134,8 +157,11 @@ def main():
 	])
 
 	# verifica se a solução do sudoku de exemplo é válida
-	print(check(sudoku_example_solution))
-
+	# print(check(sudoku_example_solution))
+	
+	sudoku = generate()
+	print(sudoku)
+	print(check(sudoku))
 
 
 # executa a função main por padrão
