@@ -146,7 +146,7 @@ def generate():
 	sudoku = Sudoku()
 	sudoku.build_graph() # cria grafo com lista de adjacência
 
-	coloring(sudoku, generate_random_pattern(), 1, False, False) # colore o sudoku com o padrão aleatório
+	coloring(sudoku, generate_random_pattern(), 1, False, False) # colore o sudoku com um padrão aleatório
 
 	# remove elementos do sudoku para gerar um jogo
 	for node in range(1, 82):
