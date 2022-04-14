@@ -1,4 +1,5 @@
 from random import shuffle, randint
+from time import sleep
 import turtle
 
 class Sudoku:
@@ -44,24 +45,35 @@ class Sudoku:
 		return str_sudoku
 	
 	# imprime um texto nas coordenadas (x, y) com turtle
-	def text(self, message, x, y, size, show_colors=False):
+	def text(self, number, x, y, size, show_colors=False):
 		background_colors = ['#FFFFFF', '#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7', '#C7CEEA', '#F3E9DD', '#D1D1D1', '#FFC4E1']
 
 		if show_colors:
 			self.myPen.penup()
 			self.myPen.goto(x-10.5, y+30.5)
 
-			self.myPen.fillcolor(background_colors[int(message)])
+			self.myPen.fillcolor(background_colors[number])
 			self.myPen.begin_fill()
 			
 			for _ in range(4):
 				self.myPen.forward(32.8)
 				self.myPen.right(90)
+
+			self.myPen.end_fill()
+
+		if number != 0:
+			self.myPen.penup()
+			self.myPen.goto(x, y)
+			self.myPen.write(number, align='left', font=('Arial', size, 'normal'))
+		else:
+			self.myPen.getscreen().update()
+
+	# remove o valor da célula no desenho do turtle
+	def draw_empty_cell(self, node):
+		row, column = self.inv[node]
+		intDim=35
 		
-		self.myPen.end_fill()
-		self.myPen.penup()
-		self.myPen.goto(x, y)
-		self.myPen.write(message, align='left', font=('Arial', size, 'normal'))
+		self.text(self.grid[row][column], self.topLeft_x + column*intDim + 12, self.topLeft_y - row*intDim - intDim + 3, 18, True)
 
 	# desenha sudoku com turtle
 	def draw(self, show_colors=True):
@@ -207,11 +219,14 @@ def check(sudoku):
 	return True
 
 # gera um tabuleiro de sudoku aleatório
-def generate():
+def generate(show_steps=False):
 	sudoku = Sudoku()
 	sudoku.build_graph() # cria grafo com lista de adjacência
 
 	coloring(sudoku, generate_random_pattern(), 1, False, False) # colore o sudoku com o padrão aleatório
+
+	if show_steps:
+		sudoku.draw()
 
 	# remove elementos do sudoku para gerar um jogo
 	for node in range(1, 82):
@@ -219,16 +234,20 @@ def generate():
 		if randint(0, 10) < 6:
 			sudoku.paint(node, 0)
 
+			if show_steps:
+				sudoku.draw_empty_cell(node)
+				sleep(0.1)
+
 	return sudoku
 
 def coloring(sudoku, pattern, node, show_steps=False, show_colors=False):
+	if show_steps:
+		sudoku.draw(show_colors)
+
 	# caso base é chegar no nó 9*9+1 (inexistente)
 	if node == 82:
 		return True
-	
-	if show_steps:
-		sudoku.draw(show_colors)
-	
+
 	# se o nó já está colorido, avança para o próximo nó
 	if sudoku.color[node] != 0:
 		return coloring(sudoku, pattern, node+1, show_steps, show_colors)
@@ -281,12 +300,11 @@ def main():
 		[4, 1, 5, 2, 9, 7, 3, 8, 6],
 	])
 
-	sudoku = generate() # gera um sudoku aleatório
+	sudoku = generate(True) # gera um sudoku aleatório
 	print(f'Sudoku gerado:\n{sudoku}')
-	
-	# coloring(sudoku, generate_random_pattern(), 1, False, False)
-	# sudoku.paint(1, 0)
-	# print(sudoku)
+	print('\nPressione CTRL+C para sair.')
+	sleep(1)
+
 	# gera uma solução para o sudoku com coloração de grafos
 	show_steps = True # indica se é para mostrar os passos intermediários
 	show_colors = True # indica se é para mostrar as cores de cada vértice (Atenção: alternância de cores frequente)

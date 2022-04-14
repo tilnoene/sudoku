@@ -10,20 +10,20 @@ Para executar o programa, execute o código no diretório atual (windows e linux
 
 Sem visualização gráfica:
 ```
-py nome_do_arquivo.py
+py sudoku.py
 ```
 
 ```
-python3 nome_do_arquivo.py
+python3 sudoku.py
 ```
 
 Com visualização gráfica:
 ```
-py nome_do_arquivo.py
+py sudoku_graphic.py
 ```
 
 ```
-python3 nome_do_arquivo.py
+python3 sudoku_graphic.py
 ```
 _Para visualização gráfica é necessário instalar a biblioteca `turtle` (comando `pip install turtle`)._
 
@@ -66,7 +66,7 @@ Pessoalmente considero a parte mais trabalhosa do processo. Apenas colocar núme
 
 A técnica consiste em preencher todas as células de um tabuleiro de sudoku válido de acordo com um _pattern_, que define a ordem dos números processados, gerado aleatoriamente, e logo após ir removendo células aleatoriamente garantindo que existe solução.
 
-imagem removendo células do sudoku
+![Exemplo do algoritmo gerando um tabuleiro de sudoku com solução](./assets/gerando_sudoku.gif)
 
 Para gerar um sudoku completo válido utilizamos o algoritmo de coloração citado anteriormente em um tabuleiro vazio.
 
