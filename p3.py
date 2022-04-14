@@ -2,6 +2,34 @@ from random import shuffle, randint
 from timeit import default_timer
 import turtle
 
+myPen = turtle.Turtle()
+myPen._tracer(0)
+myPen.speed(0)
+myPen.color('#000000')
+myPen.hideturtle()
+topLeft_x=-150
+topLeft_y=150
+
+def text(message, x, y, size, color=True):
+	background_colors = ['#FFFFFF', '#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7', '#C7CEEA', '#F3E9DD', '#D1D1D1', '#FFC4E1']
+
+	if color:
+		myPen.penup()
+		myPen.goto(x-10.5, y+30.5)
+
+		myPen.fillcolor(background_colors[int(message)])
+		myPen.begin_fill()
+		
+		for _ in range(4):
+			myPen.forward(32.8)
+			myPen.right(90)
+	
+	myPen.penup()
+	myPen.goto(x, y)
+	
+	myPen.end_fill()
+	myPen.write(message, align='left', font=('Arial', size, 'normal'))
+
 class Sudoku:
 	grid = [] # grade 9x9 do sudoku
 	adj = [] # grafo por lista de adjacência
@@ -34,6 +62,34 @@ class Sudoku:
 
 		return str_sudoku
 	
+	# desenha sudoku com turtle
+	def draw(self):
+		intDim=35
+		for row in range(0,10):
+			if (row%3)==0:
+				myPen.pensize(3)
+			else:
+				myPen.pensize(1)
+			myPen.penup()
+			myPen.goto(topLeft_x,topLeft_y-row*intDim)
+			myPen.pendown()
+			myPen.goto(topLeft_x+9*intDim,topLeft_y-row*intDim)
+		
+		for col in range(0,10):
+			if (col%3)==0:
+				myPen.pensize(3)
+			else:
+				myPen.pensize(1)    
+			myPen.penup()
+			myPen.goto(topLeft_x+col*intDim,topLeft_y)
+			myPen.pendown()
+			myPen.goto(topLeft_x+col*intDim,topLeft_y-9*intDim)
+
+		for row in range (0,9):
+			for col in range (0,9):
+				if self.grid[row][col]!=0:
+					text(self.grid[row][col], topLeft_x+col*intDim+12, topLeft_y-row*intDim-intDim+3, 18)
+
 	# colore um nó de acordo com o índice na lista de adjacência
 	def paint(self, node, color):
 		self.color[node] = color
@@ -202,6 +258,9 @@ def coloring(sudoku, pattern, node):
 		return True
 	
 	# print(sudoku)
+	myPen.clear()
+	sudoku.draw()
+	myPen.getscreen().update()
 	
 	# se o nó já está colorido, avança para o próximo nó
 	if sudoku.color[node] != 0:
@@ -271,6 +330,10 @@ def main():
 
 	print('Colorindo:')
 	print(sudoku_example)
+	
+	print('Pressione CTRL+C para fechar')
+	while True:
+		pass
 
 	# verifica se a solução do sudoku de exemplo é válida
 	# print(check(sudoku_example_solution))
