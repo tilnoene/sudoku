@@ -1,4 +1,6 @@
-Implementação de algoritmos para gerar um tabuleiro de sudoku aleatório, verificar se uma solução é válida, gerar uma solução utilizando coloração de grafos e visualização das etapas de forma gráfica ou no terminal.
+## Sudoku
+
+Implementação de algoritmos para gerar um tabuleiro de sudoku aleatório, verificar se uma solução é válida, gerar uma solução utilizando coloração de grafos e visualização das etapas de forma gráfica ou no terminal como projeto final da disciplina Teoria e Aplicação de Grafos da Universidade de Brasília.
 
 Existem duas versões do projeto, uma contendo visualização gráfica e outra com os dados no terminal.
 
@@ -36,7 +38,7 @@ Basicamente o projeto foi dividido em algumas etapas:
 
 ### Verificar se uma solução é válida
 
-A função `check()` indica se uma solução do sudoku é válida, verificando se há números distintos em cada linha, coluna e bloco 3x3.
+A função `check` indica se uma solução do sudoku é válida, verificando se há números distintos em cada linha, coluna e bloco 3x3.
 
 ### Interpretar o sudoku como um grafo representado por lista de adjacência
 
@@ -60,8 +62,12 @@ Visualização do algoritmo executando:
 
 ### Gerar tabuleiros de sudoku aleatórios
 
-Pessoalmente considero a parte mais trabalhosa do processo. Apenas colocar números aleatórios nas células, mesmo seguindo as regras de linha, coluna e blocos do sudoku, não garante que exista uma solução para a configuração. Para contornar esse desafio utilizamos uma técnica chamada _Dig Holes_, baseando [nesse paper](http://zhangroup.aporc.org/images/files/Paper_3485.pdf) (Xiang-Sun ZHANG's Research Group).
+Pessoalmente considero a parte mais trabalhosa do processo. Apenas colocar números aleatórios nas células, mesmo seguindo as regras de linha, coluna e blocos do sudoku, não garante que exista uma solução para a configuração. Para contornar esse desafio foi utilizada uma técnica chamada _Dig Holes_, baseando [nesse paper](http://zhangroup.aporc.org/images/files/Paper_3485.pdf) (Xiang-Sun ZHANG's Research Group).
 
-A técnica consiste em preencher todas as células de um tabuleiro de sudoku válido de acordo com um _pattern_, que define a ordem dos números processados, gerado aleatoriamente, e logo após ir removendo células válidas garantindo que existe solução.
+A técnica consiste em preencher todas as células de um tabuleiro de sudoku válido de acordo com um _pattern_, que define a ordem dos números processados, gerado aleatoriamente, e logo após ir removendo células aleatoriamente garantindo que existe solução.
 
-imagem modificando o 
+imagem removendo células do sudoku
+
+Para gerar um sudoku completo válido utilizamos o algoritmo de coloração citado anteriormente em um tabuleiro vazio.
+
+A função `generate_random_pattern` gera um _pattern_ aleatório embaralhando uma lista com os números de 1 à 9.
