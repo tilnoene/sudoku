@@ -221,7 +221,7 @@ def main():
 	
 	# gera uma solução para o sudoku com coloração de grafos
 	show_steps = True # indica se é para mostrar os passos intermediários
-	show_colors = True # indica se é para mostrar as cores de cada vértice (Atenção: alternância de cores frequente)
+	show_colors = True # indica se é para mostrar as cores de cada vértice
 	coloring(sudoku, generate_random_pattern(), 1, show_steps, show_colors)
 
 	print(f'Solução:\n{sudoku}')

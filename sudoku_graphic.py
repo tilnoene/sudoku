@@ -34,6 +34,7 @@ class Sudoku:
 
 		self.topLeft_x = -150
 		self.topLeft_y = 150
+		self.intDim = 35
 
   # imprime o sudoku no terminal
 	def __str__(self):
@@ -71,15 +72,13 @@ class Sudoku:
 	# remove o valor da célula no desenho do turtle
 	def draw_empty_cell(self, node):
 		row, column = self.inv[node]
-		intDim=35
 		
-		self.text(self.grid[row][column], self.topLeft_x + column*intDim + 12, self.topLeft_y - row*intDim - intDim + 3, 18, True)
+		self.text(self.grid[row][column], self.topLeft_x + column*self.intDim + 12, self.topLeft_y - row*self.intDim - self.intDim + 3, 18, True)
 
 	# desenha sudoku com turtle
 	def draw(self, show_colors=True):
 		self.myPen.clear()
 
-		intDim=35
 		for row in range(10):
 			if row % 3 == 0:
 				self.myPen.pensize(3)
@@ -87,9 +86,9 @@ class Sudoku:
 				self.myPen.pensize(1)
 			
 			self.myPen.penup()
-			self.myPen.goto(self.topLeft_x, self.topLeft_y - row*intDim)
+			self.myPen.goto(self.topLeft_x, self.topLeft_y - row*self.intDim)
 			self.myPen.pendown()
-			self.myPen.goto(self.topLeft_x + 9*intDim, self.topLeft_y - row*intDim)
+			self.myPen.goto(self.topLeft_x + 9*self.intDim, self.topLeft_y - row*self.intDim)
 		
 		for col in range(10):
 			if col % 3 == 0:
@@ -98,21 +97,27 @@ class Sudoku:
 				self.myPen.pensize(1)
 			    
 			self.myPen.penup()
-			self.myPen.goto(self.topLeft_x + col*intDim, self.topLeft_y)
+			self.myPen.goto(self.topLeft_x + col*self.intDim, self.topLeft_y)
 			self.myPen.pendown()
-			self.myPen.goto(self.topLeft_x + col*intDim, self.topLeft_y - 9*intDim)
+			self.myPen.goto(self.topLeft_x + col*self.intDim, self.topLeft_y - 9*self.intDim)
 
 		for row in range (9):
 			for col in range (9):
 				if self.grid[row][col] != 0:
-					self.text(self.grid[row][col], self.topLeft_x + col*intDim + 12, self.topLeft_y - row*intDim - intDim + 3, 18, show_colors)
+					self.text(self.grid[row][col], self.topLeft_x + col*self.intDim + 12, self.topLeft_y - row*self.intDim - self.intDim + 3, 18, show_colors)
 		
 		self.myPen.getscreen().update()
 
 	# colore um nó de acordo com o índice na lista de adjacência
-	def paint(self, node, color):
+	def paint(self, node, color, show_steps=False, show_colors=False):
 		self.color[node] = color
 		self.grid[ self.inv[node][0] ][ self.inv[node][1] ] = color
+
+		if show_steps:
+			row, column = self.inv[node]
+
+		
+			self.text(self.grid[row][column], self.topLeft_x + column*self.intDim + 12, self.topLeft_y - row*self.intDim - self.intDim + 3, 18, True)
 
 	# gera o grafo por lista de adjacência baseado na grade do sudoku
 	def build_graph(self):
@@ -241,9 +246,6 @@ def generate(show_steps=False):
 	return sudoku
 
 def coloring(sudoku, pattern, node, show_steps=False, show_colors=False):
-	if show_steps:
-		sudoku.draw(show_colors)
-
 	# caso base é chegar no nó 9*9+1 (inexistente)
 	if node == 82:
 		return True
@@ -263,12 +265,12 @@ def coloring(sudoku, pattern, node, show_steps=False, show_colors=False):
 				break
 		
 		if color_is_valid:
-			sudoku.paint(node, color)
+			sudoku.paint(node, color, show_steps, show_colors)
 			found_color = coloring(sudoku, pattern, node+1, show_steps, show_colors)
 			
 			# se a cor escolhida não gerou uma solução válida, preenche novamente com zero
 			if not found_color:
-				sudoku.paint(node, 0)
+				sudoku.paint(node, 0, show_steps, show_colors)
 			else:
 				return True
 
@@ -307,7 +309,7 @@ def main():
 
 	# gera uma solução para o sudoku com coloração de grafos
 	show_steps = True # indica se é para mostrar os passos intermediários
-	show_colors = True # indica se é para mostrar as cores de cada vértice (Atenção: alternância de cores frequente)
+	show_colors = True # indica se é para mostrar as cores de cada vértice
 	coloring(sudoku, generate_random_pattern(), 1, show_steps, show_colors)
 
 	print(f'Solução:\n{sudoku}')

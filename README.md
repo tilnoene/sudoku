@@ -58,7 +58,7 @@ Uma cor é considerada válida se não existe um nó adjacente com a mesma cor.
 
 Visualização do algoritmo executando:
 
-![Algoritmo de coloração sendo executado](./assets/sudoku_gerando_solução.gif)
+![Algoritmo de coloração sendo executado](./assets/gerando_solução_sudoku.gif)
 
 ### Gerar tabuleiros de sudoku aleatórios
 
