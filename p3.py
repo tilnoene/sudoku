@@ -1,6 +1,6 @@
 from random import shuffle, randint
 from timeit import default_timer
-import sys
+import turtle
 
 class Sudoku:
 	grid = [] # grade 9x9 do sudoku
@@ -34,6 +34,11 @@ class Sudoku:
 
 		return str_sudoku
 	
+	# colore um nó de acordo com o índice na lista de adjacência
+	def paint(self, node, color):
+		self.color[node] = color
+		self.grid[ self.inv[node][0] ][ self.inv[node][1] ] = color
+
 	# gera o grafo por lista de adjacência baseado na grade do sudoku
 	def build_graph(self):
 		# gera os índices na lista de adjacência
@@ -192,22 +197,37 @@ def generate():
 
 	return sudoku
 
-def coloring(sudoku, node):
-	# ainda não foi preenchido
-	if sudoku.color[node] == 0: 
-		 # tenta preencher com os números de 1 à 9
-		for number in range(1, 10):
-			sudoku.color[node] = number
-			sudoku.grid[ sudoku.inv[node][0] ][ sudoku.inv[node][1] ] = number
+def coloring(sudoku, pattern, node):
+	if node == 82:
+		return True
+	
+	# print(sudoku)
+	
+	# se o nó já está colorido, avança para o próximo nó
+	if sudoku.color[node] != 0:
+		return coloring(sudoku, pattern, node+1)
 
-			# se o número for válido, propaga para os vizinhos
-			if check(sudoku):
-				for neighbor in sudoku.adj[node]:
-					coloring(sudoku, neighbor)
-	else:
-		# nó já tem uma cor, então chama os vizinhos
+	found_color = False # indica se encontrou uma cor válida para o nó atual
+	for color in pattern: # testa as cores de 1 à 9
+		color_is_valid = True
+
+		# verifica se há uma cor igual nos vizinhos
 		for neighbor in sudoku.adj[node]:
-			coloring(sudoku, neighbor)
+			if sudoku.color[neighbor] == color:
+				color_is_valid = False
+				break
+		
+		if color_is_valid:
+			sudoku.paint(node, color)
+			found_color = coloring(sudoku, pattern, node+1)
+			
+			# se a cor escolhida não gerou uma solução válida, preenche novamente com zero
+			if not found_color:
+				sudoku.paint(node, 0)
+			else:
+				return True
+
+	return found_color
 
 def main():
 	# exemplos dados no roteiro do projeto
@@ -235,11 +255,9 @@ def main():
 		[4, 1, 5, 2, 9, 7, 3, 8, 6],
 	])
 
-	sys.setrecursionlimit(100000)
-
 	sudoku_example.build_graph()
 	# sudoku_example_solution.debug()
-
+	
 	# começa a coloração do sudoku partindo do nó 1 (esquerda superior)
 	print('Sudoku:')
 	print(sudoku_example)
@@ -248,11 +266,12 @@ def main():
 	print(sudoku_example_solution)
 
 	# coloring(sudoku_example, 1)
-	dfs(sudoku_example, generate_random_pattern(), 0, 0)
+	# dfs(sudoku_example, generate_random_pattern(), 0, 0)
+	coloring(sudoku_example, generate_random_pattern(), 1)
+
 	print('Colorindo:')
 	print(sudoku_example)
 
-	
 	# verifica se a solução do sudoku de exemplo é válida
 	# print(check(sudoku_example_solution))
 	
