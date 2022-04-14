@@ -205,51 +205,17 @@ def check(sudoku):
 
 	return True
 
-solution_found = False
-def dfs(sudoku, pattern, row, column):
-	global solution_found
-	if sudoku.grid[row][column] != 0:
-		if row == 8 and column == 8: # caso base = célula da direita inferior
-			solution_found = True
-			return
-		elif column == 8:
-			dfs(sudoku, pattern, row+1, 0)
-		else:
-			dfs(sudoku, pattern, row, column+1)
-		
-		return
-
-	for number in pattern:
-		if solution_found:
-			return
-
-		sudoku.grid[row][column] = number
-
-		if check(sudoku):
-			if row == 8 and column == 8: # caso base = célula da direita inferior
-				solution_found = True
-				return
-			elif column == 8:
-				dfs(sudoku, pattern, row+1, 0)
-			else:
-				dfs(sudoku, pattern, row, column+1)
-
-	if not solution_found:
-		# não achou uma solução, então volta no backtracking para escolher outros números
-		sudoku.grid[row][column] = 0
-
 def generate():
-	global solution_found
 	sudoku = Sudoku()
-	pattern = generate_random_pattern()
-	
-	start = default_timer()
+	sudoku.build_graph() # cria grafo com lista de adjacência
 
-	solution_found = False
-	dfs(sudoku, pattern, 0, 0)
+	coloring(sudoku, generate_random_pattern(), 1) # colore o sudoku com o padrão aleatório
 
-	stop = default_timer()
-	print('Time: ', stop - start) 
+	# remove elementos do sudoku para gerar um jogo
+	for node in range(1, 82):
+		# 60% de chance de remover a célula (sudoku nível intermediário)
+		if randint(0, 10) < 6:
+			sudoku.paint(node, 0)
 
 	return sudoku
 
@@ -258,9 +224,9 @@ def coloring(sudoku, pattern, node):
 		return True
 	
 	# print(sudoku)
-	myPen.clear()
-	sudoku.draw()
-	myPen.getscreen().update()
+	# myPen.clear()
+	# sudoku.draw()
+	# myPen.getscreen().update()
 	
 	# se o nó já está colorido, avança para o próximo nó
 	if sudoku.color[node] != 0:
@@ -314,6 +280,7 @@ def main():
 		[4, 1, 5, 2, 9, 7, 3, 8, 6],
 	])
 
+	'''
 	sudoku_example.build_graph()
 	# sudoku_example_solution.debug()
 	
@@ -332,15 +299,18 @@ def main():
 	print(sudoku_example)
 	
 	print('Pressione CTRL+C para fechar')
-	while True:
-		pass
-
+	# while True:
+	#	pass
+	'''
 	# verifica se a solução do sudoku de exemplo é válida
 	# print(check(sudoku_example_solution))
-	
-	# sudoku = generate()
-	# print(sudoku)
-	# print(check(sudoku))
+
+	sudoku = generate()
+	print(sudoku)
+	print(check(sudoku))
+	coloring(sudoku, generate_random_pattern(), 1)
+	print(sudoku)
+	print(check(sudoku))
 
 
 # executa a função main por padrão
