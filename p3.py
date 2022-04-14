@@ -1,12 +1,13 @@
-from distutils.command.build import build
 from random import shuffle, randint
 from timeit import default_timer
+import sys
 
 class Sudoku:
 	grid = [] # grade 9x9 do sudoku
 	adj = [] # grafo por lista de adjacência
 	index = [] # associa cada posição da matriz à um índice
 	color = {} # cor do nó (cada cor representa o número)
+	inv = {}
 
   # inicializa a grade do sudoku vazia (preenchida com zeros)
 	def __init__(self, grid=None):
@@ -40,6 +41,8 @@ class Sudoku:
 		for i in range(9):
 			for j in range(9):
 				current_index += 1
+
+				self.inv[current_index] = (i, j)
 				self.index[i][j] = current_index
 				self.color[current_index] = self.grid[i][j]
 
@@ -77,8 +80,8 @@ class Sudoku:
 
 		for i in range(len(self.adj)):
 			for v in self.adj[i]:
-				if i in aceito and v in aceito:
-					print(f'{i} {v}')
+				# if i in aceito and v in aceito:
+				print(f'{i} {v}')
 
 # gera um padrão aleatório de números de 1 à 9
 def generate_random_pattern():
@@ -189,6 +192,23 @@ def generate():
 
 	return sudoku
 
+def coloring(sudoku, node):
+	# ainda não foi preenchido
+	if sudoku.color[node] == 0: 
+		 # tenta preencher com os números de 1 à 9
+		for number in range(1, 10):
+			sudoku.color[node] = number
+			sudoku.grid[ sudoku.inv[node][0] ][ sudoku.inv[node][1] ] = number
+
+			# se o número for válido, propaga para os vizinhos
+			if check(sudoku):
+				for neighbor in sudoku.adj[node]:
+					coloring(sudoku, neighbor)
+	else:
+		# nó já tem uma cor, então chama os vizinhos
+		for neighbor in sudoku.adj[node]:
+			coloring(sudoku, neighbor)
+
 def main():
 	# exemplos dados no roteiro do projeto
 	sudoku_example = Sudoku([
@@ -215,9 +235,24 @@ def main():
 		[4, 1, 5, 2, 9, 7, 3, 8, 6],
 	])
 
-	sudoku_example_solution.build_graph()
-	print(sudoku_example_solution.debug())
+	sys.setrecursionlimit(100000)
 
+	sudoku_example.build_graph()
+	# sudoku_example_solution.debug()
+
+	# começa a coloração do sudoku partindo do nó 1 (esquerda superior)
+	print('Sudoku:')
+	print(sudoku_example)
+
+	print('Solução:')
+	print(sudoku_example_solution)
+
+	# coloring(sudoku_example, 1)
+	dfs(sudoku_example, generate_random_pattern(), 0, 0)
+	print('Colorindo:')
+	print(sudoku_example)
+
+	
 	# verifica se a solução do sudoku de exemplo é válida
 	# print(check(sudoku_example_solution))
 	
