@@ -5,7 +5,7 @@ class Sudoku:
 	adj = [] # grafo por lista de adjacência
 	index = [] # associa cada posição da matriz à um índice
 	color = {} # cor do nó (cada cor representa o número)
-	inv = {}
+	inv = {} # retorna as coordenadas na grade de acordo com o índice atribuído ao nó
 
   # inicializa a grade do sudoku vazia (preenchida com zeros)
 	def __init__(self, grid=None):
